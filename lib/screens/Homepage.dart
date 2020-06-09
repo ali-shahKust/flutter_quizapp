@@ -1,7 +1,11 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:quizappadmin/screens/chapter_details.dart';
 
 class Homepage extends StatefulWidget {
@@ -20,10 +24,14 @@ class _HomepageState extends State<Homepage> {
 
   var _chapterTitleController = TextEditingController();
   bool _validate = true ;
-
+  DocumentSnapshot mRef;
+  final databaseReference = Firestore.instance;
+   ProgressDialog pr;
   @override
   Widget build(BuildContext context) {
-   return DefaultTabController(
+    pr = ProgressDialog(context);
+
+    return DefaultTabController(
      length: 2,
      child: Scaffold(
        key: _key,
@@ -179,6 +187,7 @@ class _HomepageState extends State<Homepage> {
                     _newstitleController.text.isEmpty ? _validate = true : _validate = false;
                     _newDescController.text.isEmpty ? _validate = true : _validate = false;
                   });
+                  createNews();
                   }
               ),
             )),
@@ -307,7 +316,7 @@ SizedBox(height: 20,),
                           _chapterTitleController.text,
                           _topictitleController.text,
                           _youTubeLinkController.text,
-                          _pickedFile.path,
+                          _imageFile,
                         )));
                     }
                 ),
@@ -371,5 +380,68 @@ SizedBox(height: 20,),
       );
     });
   }
+  //Function will be called On Request Send
+  void createNews() async{
+    pr.style(
+        message: 'Please Wait...',
+        borderRadius: 10.0,
+        backgroundColor: Colors.white,
+        progressWidget: CircularProgressIndicator(),
+        elevation: 10.0,
+        insetAnimCurve: Curves.easeInOut,
+        progress: 0.0,
+        maxProgress: 100.0,
+        progressTextStyle: TextStyle(
+            color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
+        messageTextStyle: TextStyle(
+            color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600)
+    );
+    await pr.show();
+    StorageReference ref = FirebaseStorage
+        .instance
+        .ref()
+        .child('${Timestamp.now()}.jpeg');
+    StorageUploadTask task =
+    ref.putFile(_imageFile);
 
+    try{
+
+      var result = await task.onComplete;
+      DocumentReference ref = await databaseReference.collection("News")
+          .add({
+        'newstitle' : _newstitleController.text,
+        'newsdescription': _newDescController.text,
+        'newsheader': await result.ref.getDownloadURL(),
+      });
+     await setState(() {
+        _newstitleController.text ='';
+        _newDescController.text = '';
+        _imageFile = null;
+      });
+
+      Fluttertoast.showToast(
+          msg: "News Updated Successfully",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.grey.shade300,
+          textColor: Colors.black,
+          fontSize: 16.0
+      );
+      pr.hide().then((isHidden) {
+        print(isHidden);
+      });
+    }catch(e){
+      Fluttertoast.showToast(
+          msg: e.message,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Colors.grey.shade300,
+          textColor: Colors.black,
+          fontSize: 16.0
+      );
+    }
+
+  }
 }

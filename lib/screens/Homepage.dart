@@ -19,7 +19,7 @@ class _HomepageState extends State<Homepage> {
   var _youTubeLinkController= TextEditingController();
 
   var _chapterTitleController = TextEditingController();
-
+  bool _validate = true ;
 
   @override
   Widget build(BuildContext context) {
@@ -128,6 +128,7 @@ class _HomepageState extends State<Homepage> {
               onChanged: (String value) {},
               cursorColor: Colors.white,
               decoration: InputDecoration(
+                  errorText: _validate ? 'Value Can\'t Be Empty' : null,
                   hintText: "News Title",
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(
@@ -148,6 +149,8 @@ class _HomepageState extends State<Homepage> {
               onChanged: (String value) {},
               cursorColor: Colors.white,
               decoration: InputDecoration(
+                  errorText: _validate ? 'Value Can\'t Be Empty' : null,
+
                   hintText: "Description",
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(
@@ -172,7 +175,10 @@ class _HomepageState extends State<Homepage> {
                       fontSize: 18),
                 ),
                 onPressed: () {
-
+                  setState(() {
+                    _newstitleController.text.isEmpty ? _validate = true : _validate = false;
+                    _newDescController.text.isEmpty ? _validate = true : _validate = false;
+                  });
                   }
               ),
             )),
@@ -218,6 +224,7 @@ class _HomepageState extends State<Homepage> {
                 onChanged: (String value) {},
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
+                    errorText: _validate ? 'Value Can\'t Be Empty' : null,
                     hintText: "Title of topic",
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
@@ -236,6 +243,8 @@ class _HomepageState extends State<Homepage> {
                 onChanged: (String value) {},
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
+                    errorText: _validate ? 'Value Can\'t Be Empty' : null,
+
                     hintText: "Youtube link Explain Video",
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
@@ -263,6 +272,7 @@ SizedBox(height: 20,),
                 onChanged: (String value) {},
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
+                    errorText: _validate ? 'Value Can\'t Be Empty' : null,
                     hintText: "Chapter Title",
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
@@ -287,6 +297,12 @@ SizedBox(height: 20,),
                           fontSize: 18),
                     ),
                     onPressed: () {
+
+                      setState(() {
+                        _youTubeLinkController.text.isEmpty ? _validate = true : _validate = false;
+                        _topictitleController.text.isEmpty ? _validate = true : _validate = false;
+                        _chapterTitleController.text.isEmpty ? _validate = true : _validate = false;
+                      });
                         Navigator.push(context, MaterialPageRoute(builder: (context)=>ChapterDetail(
                           _chapterTitleController.text,
                           _topictitleController.text,

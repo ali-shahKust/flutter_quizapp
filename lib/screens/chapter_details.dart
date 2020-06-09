@@ -54,6 +54,7 @@ class _ChapterDetailState extends State<ChapterDetail> {
                 onChanged: (String value) {},
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
+                    errorText: _validate ? 'Value Can\'t Be Empty' : null,
                     hintText: "Type Chapter Content",
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
@@ -88,10 +89,12 @@ class _ChapterDetailState extends State<ChapterDetail> {
               elevation: 2.0,
               borderRadius: BorderRadius.all(Radius.circular(30)),
               child: TextField(
+
                 controller: _oneController,
                 onChanged: (String value) {},
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
+                    errorText: _validate ? 'Value Can\'t Be Empty' : null,
                     hintText: "Option one",
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
@@ -110,6 +113,7 @@ class _ChapterDetailState extends State<ChapterDetail> {
                 onChanged: (String value) {},
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
+                    errorText: _validate ? 'Value Can\'t Be Empty' : null,
                     hintText: "Option two",
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
@@ -128,6 +132,8 @@ class _ChapterDetailState extends State<ChapterDetail> {
                 onChanged: (String value) {},
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
+                    errorText: _validate ? 'Value Can\'t Be Empty' : null,
+
                     hintText: "Option three",
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
@@ -146,6 +152,7 @@ class _ChapterDetailState extends State<ChapterDetail> {
                 onChanged: (String value) {},
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
+                    errorText: _validate ? 'Value Can\'t Be Empty' : null,
                     hintText: "Option four",
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
@@ -172,6 +179,11 @@ class _ChapterDetailState extends State<ChapterDetail> {
                     onPressed: () {
                       setState(() {
                         _questionController.text.isEmpty ? _validate = true : _validate = false;
+                        _chapterContentController.text.isEmpty ? _validate = true : _validate = false;
+                        _oneController.text.isEmpty ? _validate = true : _validate = false;
+                        _twoController.text.isEmpty ? _validate = true : _validate = false;
+                        _threeController.text.isEmpty ? _validate = true : _validate = false;
+                        _fourController.text.isEmpty ? _validate = true : _validate = false;
                       });
 
                       _validate==false?

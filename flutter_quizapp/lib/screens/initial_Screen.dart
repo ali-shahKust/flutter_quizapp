@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterquizapp/app_color/app_color.dart';
+import 'package:flutterquizapp/screens/dynamic_topics_list.dart';
 
 class Initial_screen extends StatefulWidget {
   @override
@@ -12,7 +13,7 @@ List<Map> Posts = [];
 final List <Map> News = [];
 class _Initial_screenState extends State<Initial_screen> {
   final databaseRef = Firestore.instance;
-
+List _key=[];
 
   @override
   void initState() {
@@ -182,7 +183,7 @@ class _Initial_screenState extends State<Initial_screen> {
                 onPressed: () {},
                 color: Colors.orange,
                 textColor: Colors.white,
-                child: Text("4 topics".toUpperCase(),
+                child: Text("${Posts.length} topics".toUpperCase(),
                     style: TextStyle(fontSize: 14)),
               ),
             ],
@@ -213,7 +214,7 @@ class _Initial_screenState extends State<Initial_screen> {
                             child: ListView.builder(
                                 shrinkWrap: true,
                                 scrollDirection: Axis.horizontal,
-                                itemCount: 15,
+                                itemCount: Posts.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   return dynamicBuildList(context, index);
                                 }),
@@ -320,15 +321,23 @@ class _Initial_screenState extends State<Initial_screen> {
                 padding: const EdgeInsets.all(12.0),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16.0),
-                  child: Image.network(
-                    'https://image.freepik.com/free-vector/abstract-dynamic-pattern-wallpaper-vector_53876-59131.jpg',
-                    height: 150.0,
-                    width: 150.0,
+                  child: GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>Dynamic_topic_list(
+                        Posts[index],
+
+                      )));
+                    },
+                    child: Image.network(
+                      Posts[index]['topiccover'],
+                      height: 150.0,
+                      width: 150.0,
+                    ),
                   ),
                 ),
               ),
               Text(
-                'Topic Name',
+                Posts[index]['chaptertitle'],
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 12,
@@ -348,11 +357,9 @@ class _Initial_screenState extends State<Initial_screen> {
     );
   }
 
-  void getDynamicTopics() async {
-
-  }
   void getnewsData() async{
     try{
+      News.clear();
       databaseRef.collection("News")
           .getDocuments()
           .then((QuerySnapshot snapshot) {
@@ -369,12 +376,13 @@ class _Initial_screenState extends State<Initial_screen> {
 
   void getDynamicData() async{
     try{
+      Posts.clear();
       databaseRef.collection("Dynamic")
           .getDocuments()
           .then((QuerySnapshot snapshot) {
         snapshot.documents.forEach((f){
           Posts.add(f.data);
-          print('snaps data ${f.data}');
+          print('dynamic data ${f.data}');
         });
         setState(() {});
       });

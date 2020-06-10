@@ -1,14 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterquizapp/app_color/app_color.dart';
 
 class Dynamic_topic_list extends StatefulWidget {
+  Map _map;
+
+  Dynamic_topic_list(this._map);
   @override
-  _Dynamic_topic_listState createState() => _Dynamic_topic_listState();
+  _Dynamic_topic_listState createState() => _Dynamic_topic_listState(_map);
 }
 final primary = Constant.appColor;
 List<Map> Chapters = [];
 List<Map> _filteredList = List();
 class _Dynamic_topic_listState extends State<Dynamic_topic_list> {
+  final databaseRef = Firestore.instance;
+
+  Map _map ;
+  _Dynamic_topic_listState(this._map);
   //Assigning values to filter list
   _filterItems(String val) {
     _filteredList.clear();
@@ -21,6 +29,13 @@ class _Dynamic_topic_listState extends State<Dynamic_topic_list> {
     setState(() {});
   }
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getDynamicData();
+
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,7 +105,7 @@ class _Dynamic_topic_listState extends State<Dynamic_topic_list> {
                           padding:
                           const EdgeInsets.only(right: 220.0, top: 30),
                           child: Text(
-                            'Book Name',
+                            _map['chaptercontent'],
                             style:
                             TextStyle(color: Colors.white, fontSize: 16),
                           ),
@@ -146,7 +161,7 @@ class _Dynamic_topic_listState extends State<Dynamic_topic_list> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
                       child: Image.network(
-                          'https://image.freepik.com/free-vector/abstract-dynamic-pattern-wallpaper-vector_53876-59131.jpg',
+                          _map['topiccover'],
                           height: 230.0,
                           width: 150.0,
                           fit:BoxFit.fill
@@ -185,7 +200,7 @@ class _Dynamic_topic_listState extends State<Dynamic_topic_list> {
                             child: ListView.builder(
                                 shrinkWrap: true,
                                 scrollDirection: Axis.vertical,
-                                itemCount: 15,
+                                itemCount: Chapters.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   return dynamicBuildList(context, index);
                                 }),
@@ -228,7 +243,7 @@ class _Dynamic_topic_listState extends State<Dynamic_topic_list> {
                 Padding(
                   padding: const EdgeInsets.only(left:18.0),
                   child: Text(
-                    'Chapter 1 - Some Dumy Text',
+                    'Chapter 1 - ${Chapters[index]['chaptertitle']}',
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 12,
@@ -238,7 +253,7 @@ class _Dynamic_topic_listState extends State<Dynamic_topic_list> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    '20+ Chapters ',
+                    '20+ Topics ',
                     style: TextStyle(
                         color: Colors.grey,
                         fontSize: 12,
@@ -257,5 +272,20 @@ class _Dynamic_topic_listState extends State<Dynamic_topic_list> {
       ),
     );
   }
-
+  void getDynamicData() async{
+    try{
+      Chapters.clear();
+      databaseRef.collection("Dynamic")
+          .document(_map['mykey']).collection(_map['chaptertitle']).getDocuments()
+          .then((QuerySnapshot snapshot) {
+        snapshot.documents.forEach((f){
+          Chapters.add(f.data);
+          print('Get list data ${f.data}');
+        });
+        setState(() {});
+      });
+    }catch(e){
+      print('get me error ${e.message}');
+    }
+  }
 }

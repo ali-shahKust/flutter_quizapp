@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -7,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:uuid/uuid.dart';
 
 
 class ChapterDetail extends StatefulWidget {
@@ -204,7 +206,7 @@ class _ChapterDetailState extends State<ChapterDetail> {
   }
 
   void createTopic() async{
-
+    DocumentReference mref;
     pr.style(
         message: 'Please Wait...',
         borderRadius: 10.0,
@@ -228,28 +230,32 @@ class _ChapterDetailState extends State<ChapterDetail> {
     ref.putFile(_imageFile);
 
     try{
-
+      Random random = new Random();
+      var uuid = Uuid().v4();
       var result = await task.onComplete;
-      DocumentReference ref = await databaseReference.collection(_chapterContentController.text,)
-          .add({
+      mref = await databaseReference.collection("Dynamic")
+
+          .document(uuid.toString()).setData({
         'chaptertitle' : title,
-        'youtubelink': link,
         'topiccover': await result.ref.getDownloadURL(),
         'chaptercontent': _chapterContentController.text,
-        'question': _questionController.text,
-        'optionone': _oneController.text,
-        'optiontwo': _twoController.text,
-        'optionthree': _threeController.text,
-        'optionfour': _fourController.text,
-      });
-      await setState(() {
-        _oneController.text ='';
-        _twoController.text ='';
-        _threeController.text ='';
-        _fourController.text ='';
-        _questionController.text ='';
-        _chapterContentController.text ='';
-        _imageFile = null;
+
+      }).then((myfun) async {
+        await databaseReference.collection("Dynamic").document(uuid.toString()).collection(title)
+            .add({
+          'chaptertitle' : title,
+          'topiccover': await result.ref.getDownloadURL(),
+          'chaptercontent': _chapterContentController.text,
+          'optionone': _oneController.text,
+          'optiontwo': _twoController.text,
+          'optionthree': _threeController.text,
+          'optionfour': _fourController.text,
+          'question': _questionController.text,
+          'chaptercontent': _chapterContentController.text,
+          'youtube': link,
+
+
+        });
       });
       await _validate==false?
       Alert(
